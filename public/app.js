@@ -1,78 +1,89 @@
-console.log('APP v3 yüklendi');
+console.log("APP v5 çalışıyor");
 
-async function loadFiles() {
-  const token = localStorage.getItem('token');
-  if (!token) return;
+// Dosya yükleme
+async function uploadFile() {
+  const file = document.getElementById("fileInput").files[0];
+  if (!file) return alert("Lütfen dosya seç!");
 
-  const res = await fetch('/api/files', {
-    headers: { 'Authorization': 'Bearer ' + token }
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await fetch("/api/upload", {
+    method: "POST",
+    headers: {
+      "Authorization": "Bearer " + localStorage.getItem("token")
+    },
+    body: formData
   });
-  if (!res.ok) return;
+
+  if (res.ok) {
+    alert("Dosya yüklendi!");
+    loadFiles();
+  } else {
+    const data = await res.json();
+    alert("Yükleme hatası: " + data.error);
+  }
+}
+
+// Dosya listeleme
+async function loadFiles() {
+  const res = await fetch("/api/files", {
+    headers: {
+      "Authorization": "Bearer " + localStorage.getItem("token")
+    }
+  });
 
   const files = await res.json();
-  const container = document.querySelector('#files');
-  container.innerHTML = '';
+  const fileList = document.getElementById("fileList");
+  fileList.innerHTML = "";
 
-  files.forEach(f => {
-    const card = document.createElement('div');
-    card.className = 'file-card';
+  files.forEach(file => {
+    const div = document.createElement("div");
+    div.className = "file-card";
 
-    const preview = document.createElement('div');
-    preview.className = 'preview';
-
-    if (f.mimetype.startsWith('image/')) {
-      const img = document.createElement('img');
-      img.src = `/uploads/${f.user_id}/${f.stored_name}`;
-      preview.appendChild(img);
+    // Önizleme (resim/video/pdf vs)
+    let preview = "";
+    if (file.mime.startsWith("image/")) {
+      preview = `<img src="/uploads/${file.user_id}/${file.stored_name}" alt="${file.original_name}" />`;
+    } else if (file.mime.startsWith("video/")) {
+      preview = `<video controls src="/uploads/${file.user_id}/${file.stored_name}"></video>`;
+    } else if (file.mime.startsWith("audio/")) {
+      preview = `<audio controls src="/uploads/${file.user_id}/${file.stored_name}"></audio>`;
     } else {
-      preview.textContent = f.original_name;
+      preview = `<a href="/uploads/${file.user_id}/${file.stored_name}" target="_blank">${file.original_name}</a>`;
     }
 
-    card.appendChild(preview);
-
-    const actions = document.createElement('div');
-    actions.className = 'actions';
-
-    // İndir butonu
-    const btnDownload = document.createElement('a');
-    btnDownload.textContent = 'İndir';
-    btnDownload.href = `/uploads/${f.user_id}/${f.stored_name}`;
-    btnDownload.download = f.original_name;
-    actions.appendChild(btnDownload);
-
-    // Yeni Sekmede Aç butonu
-    const btnOpen = document.createElement('a');
-    btnOpen.textContent = 'Yeni Sekmede Aç';
-    btnOpen.href = `/uploads/${f.user_id}/${f.stored_name}`;
-    btnOpen.target = '_blank';
-    actions.appendChild(btnOpen);
-
-    // Sil butonu
-    const btnDelete = document.createElement('button');
-    btnDelete.textContent = 'Sil';
-    btnDelete.className = 'danger';
-    btnDelete.onclick = async () => {
-      if (!confirm('Bu dosyayı silmek istiyor musun?')) return;
-
-      const delRes = await fetch(`/api/files/${f.id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': 'Bearer ' + token
-        }
-      });
-
-      if (delRes.ok) {
-        card.remove();
-      } else {
-        const data = await delRes.json().catch(() => ({}));
-        alert('Silinemedi: ' + (data.error || delRes.status));
-      }
-    };
-    actions.appendChild(btnDelete);
-
-    card.appendChild(actions);
-    container.appendChild(card);
+    div.innerHTML = `
+      <h3>${file.original_name}</h3>
+      <div class="preview">${preview}</div>
+      <div class="file-actions">
+        <a href="/uploads/${file.user_id}/${file.stored_name}" download>İndir</a>
+        <button class="danger" onclick="deleteFile(${file.id})">Sil</button>
+      </div>
+    `;
+    fileList.appendChild(div);
   });
 }
 
-document.addEventListener('DOMContentLoaded', loadFiles);
+// Dosya silme
+async function deleteFile(id) {
+  if (!confirm("Bu dosyayı silmek istediğine emin misin?")) return;
+
+  const res = await fetch(`/api/files/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Authorization": "Bearer " + localStorage.getItem("token")
+    }
+  });
+
+  if (res.ok) {
+    alert("Dosya silindi!");
+    loadFiles();
+  } else {
+    const data = await res.json();
+    alert("Silme hatası: " + data.error);
+  }
+}
+
+// İlk yüklemede listele
+loadFiles();
