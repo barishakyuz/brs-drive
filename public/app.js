@@ -1,3 +1,5 @@
+console.log('APP v3 yüklendi');
+
 async function loadFiles() {
   const token = localStorage.getItem('token');
   if (!token) return;
