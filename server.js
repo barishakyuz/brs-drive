@@ -11,6 +11,16 @@ const multer = require('multer');
 const mime = require('mime-types');
 const { nanoid } = require('nanoid');
 const db = require('./db');
+// Yüklenmesine izin verilen dosya türleri
+const allowedMimes = new Set([
+  'image/jpeg', 'image/png',                         // resimler
+  'video/mp4',                                       // videolar
+  'application/pdf',                                 // pdf
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // Word
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',       // Excel
+  'audio/mpeg', 'audio/ogg', 'audio/wav', 'audio/mp4', 'audio/x-m4a'        // ses dosyaları
+]);
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
