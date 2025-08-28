@@ -1,29 +1,38 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Mini Drive</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="container">
     <h1>Mini Drive</h1>
 
+    <!-- Yükleme kutusu -->
     <div class="upload-box">
-      <h2>Hoş geldin, czx</h2>
-      <input type="file" id="fileInput">
-      <button onclick="uploadFile()">Yükle</button>
-      <p>İzin verilenler: JPG/JPEG/PNG, MP4, PDF, DOCX, XLSX (<=200MB)</p>
+      <h2 id="welcome">Hoş geldin 👋</h2>
+
+      <input type="file" id="fileInput" />
+      <button id="uploadBtn">Yükle</button>
+
+      <p style="opacity:.8; margin-top:8px;">
+        İzin verilenler: JPG/JPEG/PNG, MP4, PDF, DOCX, XLSX (≤ 200MB)
+      </p>
     </div>
 
-    <h2>Dosyaların</h2>
+    <h2 style="margin: 6px 0 12px;">Dosyaların</h2>
     <div id="fileList" class="file-list">
-      <!-- Dosyalar buraya yüklenecek -->
+      <!-- Kartlar JS ile doldurulacak -->
     </div>
+
+    <p id="emptyState" style="opacity:.75; text-align:center; margin-top:16px; display:none;">
+      Henüz dosya yok. Yukarıdan dosya yükleyebilirsin.
+    </p>
   </div>
 
-  <!-- Javascript -->
-  <script src="app.js?v=6"></script>
+  <!-- Uygulama JS (cache kırmak için versiyon numarası artır) -->
+  <script src="app.js?v=7"></script>
 </body>
 </html>
