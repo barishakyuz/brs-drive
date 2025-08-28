@@ -4,127 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mini Drive</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #111;
-      color: #eee;
-      text-align: center;
-    }
-    .file-card {
-      border: 1px solid #444;
-      margin: 10px;
-      padding: 10px;
-      background: #222;
-      border-radius: 6px;
-      display: inline-block;
-    }
-    button {
-      margin: 5px;
-      padding: 6px 12px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    button:hover {
-      opacity: 0.8;
-    }
-    .delete-btn {
-      background: #e74c3c;
-      color: #fff;
-    }
-    .download-btn {
-      background: #3498db;
-      color: #fff;
-    }
-    .open-btn {
-      background: #2ecc71;
-      color: #fff;
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>Mini Drive</h1>
-  <div>
-    <input type="file" id="fileInput">
-    <button onclick="uploadFile()">Yükle</button>
+  <div class="container">
+    <h1>Mini Drive</h1>
+
+    <div class="upload-box">
+      <h2>Hoş geldin, czx</h2>
+      <input type="file" id="fileInput">
+      <button onclick="uploadFile()">Yükle</button>
+      <p>İzin verilenler: JPG/JPEG/PNG, MP4, PDF, DOCX, XLSX (<=200MB)</p>
+    </div>
+
+    <h2>Dosyaların</h2>
+    <div id="fileList" class="file-list">
+      <!-- Dosyalar buraya yüklenecek -->
+    </div>
   </div>
 
-  <h2>Dosyalarım</h2>
-  <div id="fileList"></div>
-
-  <script>
-    async function uploadFile() {
-      const file = document.getElementById("fileInput").files[0];
-      if (!file) return alert("Dosya seç!");
-      
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        headers: {
-          "Authorization": "Bearer " + localStorage.getItem("token")
-        },
-        body: formData
-      });
-
-      if (res.ok) {
-        alert("Dosya yüklendi!");
-        loadFiles();
-      } else {
-        const data = await res.json();
-        alert("Yükleme hatası: " + data.error);
-      }
-    }
-
-    async function loadFiles() {
-      const res = await fetch("/api/files", {
-        headers: {
-          "Authorization": "Bearer " + localStorage.getItem("token")
-        }
-      });
-      const files = await res.json();
-
-      const fileList = document.getElementById("fileList");
-      fileList.innerHTML = "";
-      files.forEach(file => {
-        const div = document.createElement("div");
-        div.className = "file-card";
-        div.innerHTML = `
-          <p>${file.original_name}</p>
-          <a href="/uploads/${file.user_id}/${file.stored_name}" download>
-            <button class="download-btn">İndir</button>
-          </a>
-          <a href="/uploads/${file.user_id}/${file.stored_name}" target="_blank">
-            <button class="open-btn">Yeni Sekmede Aç</button>
-          </a>
-          <button class="delete-btn" onclick="deleteFile(${file.id})">Sil</button>
-        `;
-        fileList.appendChild(div);
-      });
-    }
-
-    async function deleteFile(id) {
-      if (!confirm("Bu dosyayı silmek istediğine emin misin?")) return;
-
-      const res = await fetch(`/api/files/${id}`, {
-        method: "DELETE",
-        headers: {
-          "Authorization": "Bearer " + localStorage.getItem("token")
-        }
-      });
-
-      if (res.ok) {
-        alert("Dosya silindi!");
-        loadFiles();
-      } else {
-        const data = await res.json();
-        alert("Silme hatası: " + data.error);
-      }
-    }
-
-    loadFiles();
-  <script src="app.js?v=5"></script>
+  <!-- Javascript -->
+  <script src="app.js?v=6"></script>
 </body>
 </html>
