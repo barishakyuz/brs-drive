@@ -11,6 +11,11 @@ const multer = require('multer');
 const mime = require('mime-types');
 const { nanoid } = require('nanoid');
 const db = require('./db');
+// Dosya silme için SQL sorguları
+const deleteFileOwned = db.prepare('DELETE FROM files WHERE id = ? AND user_id = ?');
+const deleteFileAny   = db.prepare('DELETE FROM files WHERE id = ?');
+const findFileByIdAny = db.prepare('SELECT * FROM files WHERE id = ?');
+
 // Yüklenmesine izin verilen dosya türleri
 const allowedMimes = new Set([
   'image/jpeg', 'image/png',                         // resimler
@@ -94,14 +99,40 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
-  limits: { fileSize: 200 * 1024 * 1024 }, // 200MB
-  fileFilter: (req, file, cb) => {
-    if (allowedMimes.has(file.mimetype)) cb(null, true);
-    else cb(new Error('Unsupported file type: ' + file.mimetype));
+fileFilter: (req, file, cb) => {
+    if (allowedMimes.has(file.mimetype)) {
+      cb(null, true); // izin verilen tip
+    } else {
+      cb(new Error('Bu dosya tipi desteklenmiyor!'), false); // reddet
+    }
   }
 });
 
 // --- Routes ---
+// Dosya silme endpointi
+app.delete('/api/files/:id', authRequired, (req, res) => {
+  const id = Number(req.params.id);
+  if (!id) return res.status(400).json({ error: 'invalid id' });
+
+  // Admin ise herhangi bir dosyayı silebilir
+  const file = isAdmin(req) ? findFileByIdAny.get(id)
+                            : findFileById.get(id, req.userId);
+
+  if (!file) return res.status(404).json({ error: 'not found' });
+
+  const ownerId = file.user_id;
+  const filePath = path.join(__dirname, 'uploads', String(ownerId), file.stored_name);
+
+  try {
+    if (fs.existsSync(filePath)) fs.unlinkSync(filePath); // fiziksel dosyayı sil
+  } catch {}
+
+  if (isAdmin(req)) deleteFileAny.run(id);
+  else              deleteFileOwned.run(id, req.userId);
+
+  res.json({ ok: true });
+});
+
 app.post('/api/register', async (req, res) => {
   try {
     const { email, name, password } = req.body;
