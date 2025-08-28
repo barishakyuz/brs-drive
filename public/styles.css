@@ -1,83 +1,148 @@
+/* Genel Tema */
 :root {
-  --bg: #0b0c10;
-  --card: #121318;
-  --text: #e6e6e6;
-  --muted: #9aa0a6;
-  --accent: #6ee7b7;
-  --danger: #ef4444;
-  --border: #1f2937;
+  --bg: #0f1116;
+  --card: #1a1d24;
+  --text: #ffffff;
+  --border: #2a2d35;
+  --green: #28a745;
+  --blue: #007bff;
+  --red: #dc3545;
 }
 
-* { box-sizing: border-box; }
-html, body { height: 100%; }
-body {
+* {
   margin: 0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-  background: linear-gradient(180deg, var(--bg), #121212);
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  background: var(--bg);
   color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
 }
 
-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 20px; border-bottom: 1px solid var(--border);
-  position: sticky; top: 0; background: rgba(11,12,16,0.8); backdrop-filter: blur(6px);
+.container {
+  width: 100%;
+  max-width: 900px;
 }
 
-h1 { margin: 0; font-size: 20px; letter-spacing: 0.5px; }
-nav button.link {
-  background: transparent; border: none; color: var(--text);
-  margin-left: 8px; cursor: pointer; padding: 8px 12px; border-radius: 10px;
-}
-nav .danger { background: var(--danger); color: #fff; border: none; padding: 8px 12px; border-radius: 10px; cursor: pointer; }
-.hidden { display: none !important; }
-
-main { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
-
-.card {
-  background: var(--card); border: 1px solid var(--border); border-radius: 14px;
-  padding: 18px; margin-bottom: 16px; box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+/* Başlık */
+h1 {
+  margin-bottom: 20px;
+  font-size: 28px;
+  text-align: center;
 }
 
-label { display: block; margin: 10px 0; }
-input[type="email"], input[type="password"], input[type="text"] {
-  width: 100%; padding: 10px 12px; border-radius: 10px;
-  border: 1px solid var(--border); background: #0e0f14; color: var(--text);
+/* Upload kutusu */
+.upload-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 20px;
+  border-radius: 14px;
+  margin-bottom: 25px;
+  text-align: center;
 }
 
-button {
-  background: var(--accent); color: #00130a; border: none;
-  padding: 10px 14px; border-radius: 10px; cursor: pointer; font-weight: 600;
+.upload-box h2 {
+  margin-bottom: 12px;
 }
 
-.muted { color: var(--muted); font-size: 12px; }
+.upload-box input {
+  margin: 10px 0;
+}
 
-.grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 14px;
+.upload-box button {
+  background: var(--green);
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+.upload-box button:hover {
+  background: #218838;
+}
+
+/* Dosya listesi */
+.file-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
 }
 
 .file-card {
-  background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
 }
 
-.file-card h3 { font-size: 14px; margin: 6px 0 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.file-card h3 {
+  font-size: 14px;
+  margin: 6px 0 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .preview {
-  width: 100%; height: 220px; border: 1px dashed var(--border); border-radius: 12px;
-  display: flex; align-items: center; justify-content: center; overflow: hidden; background: #0f1116;
+  width: 100%;
+  height: 200px;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #1f222a;
 }
-.preview iframe, .preview video, .preview img, .preview canvas {
-  width: 100%; height: 100%; object-fit: contain; border: 0;
+
+.preview img, .preview video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
-.file-actions { margin-top: 8px; display: flex; gap: 8px; }
-.file-actions a { padding: 8px 10px; border: 1px solid var(--border); border-radius: 10px; color: var(--text); text-decoration: none; display: inline-block; }
-button.danger {
-  background: #c62828;
+
+/* Butonlar */
+.file-actions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.file-actions a,
+.file-actions button {
+  flex: 1;
+  padding: 8px;
+  border-radius: 8px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
   color: #fff;
   border: none;
-  padding: 5px 10px;
-  border-radius: 4px;
-  cursor: pointer;
 }
-button.danger:hover {
-  background: #b71c1c;
+
+.file-actions a.download {
+  background: var(--blue);
+}
+.file-actions a.download:hover {
+  background: #0056b3;
+}
+
+.file-actions button.delete {
+  background: var(--red);
+}
+.file-actions button.delete:hover {
+  background: #a71d2a;
 }
